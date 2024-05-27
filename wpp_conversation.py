@@ -38,17 +38,51 @@ class WhatsAppConversation:
             self.client.send_message(self.number, message, "location")
             update_step(self.number, input_message.ts)
         elif step == 1:
-            message = "Se não mediu selecione não sei"
+            message = "Temperatura 37,5° ou mais"
             self.client.send_question(
                 self.number, "Febre", message, ["Sim", "Não", "Não sei"]
             )
             update_step(self.number, input_message.ts)
         elif step == 2:
-            message = "preencha"
+            message = "Nas últimas 24h"
             self.client.send_question(
-                self.number, "Dor de cabeça", message, ["Sim", "Não"]
+                self.number, "Dor", message, ["Sim", "Não", "Não sei"]
             )
             update_step(self.number, input_message.ts)
+        elif step == 3:
+            message = "Nas últimas 24h"
+            self.client.send_question(
+                self.number, "Vômitos", message, ["Sim", "Não", "Nauseas"]
+            )
+            update_step(self.number, input_message.ts)
+        elif step == 4:
+            message = "Nas últimas 24h"
+            self.client.send_question(
+                self.number, "Diarréia", message, ["Sim", "Não"]
+            )
+            update_step(self.number, input_message.ts)
+        elif step == 5:
+            message = "Nas últimas 24h ou no momento de contato com a água"
+            self.client.send_question(
+                self.number, "Possui ferimentos na pele?", message, ["Sim", "Não"]
+            )
+            update_step(self.number, input_message.ts)
+        elif step == 6:
+            message = "Nas últimas 24h"
+            self.client.send_question(
+                self.number, "Sente falta de Ar?", message, ["Sim", "Não"]
+            )
+            update_step(self.number, input_message.ts)
+        elif step == 7:
+            message = "Em qualquer período nas últimas semanas"
+            self.client.send_question(
+                self.number, "Teve contato com água da enchente?", message, ["Sim", "Não"]
+            )
+            update_step(self.number, input_message.ts)
+        elif step == 8:
+            reset_step(self.number)
+            message = "Muito obrigado por responder o questionário, suas respostas serão enviadas à um profissional que fará uma avaliação e entrará em contato caso seja necessário."
+            self.client.send_message(self.number, message)
         else:
             reset_step(self.number)
             message = "Tchau, se precisar de alguma ajuda, conte comigo."

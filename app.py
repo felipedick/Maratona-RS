@@ -2,9 +2,11 @@ import os
 from typing import Any, Dict
 
 import uvicorn
+import folium
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
 
-from db_handler import update_user_data
+from db_handler import update_user_data, get_all_user_data
 from utils import convert_number
 from wpp_conversation import WhatsAppConversation, WhatsAppMessage
 
@@ -41,6 +43,7 @@ async def webhook(request: Request):
             for location in locations:
                 sender = convert_number(location.get("from", ""))
                 coords = location.get("location", {})
+                coords = {k: v for k, v in coords.items() if k in ["latitude", "longitude"]}
                 update_user_data(sender, coords)
                 ts = int(location.get("timestamp"))
                 message_obj = WhatsAppMessage(from_number=sender, body="", ts=ts)
@@ -57,6 +60,32 @@ async def webhook(request: Request):
                 conv.process_message(message_obj)
 
     return {"response": "OK"}
+
+
+@app.get("/", response_class=HTMLResponse)
+def map_view():
+    # Data to be used in the map
+    all_user_data = get_all_user_data()
+
+    # Create a map centered around the location
+    m = folium.Map(location=[-29, -53], zoom_start=5, tiles="cartodb positron")
+
+    # Add a marker with a popup
+    for user_data in all_user_data:
+        info = ""
+        for k, v in user_data.items():
+            if k in ["latitude", "longitude"]:
+                continue
+            info += f"<b>{k}:</b> {v}<br>"
+        folium.Marker(
+            [user_data['latitude'], user_data['longitude']],
+            popup = folium.Popup(folium.IFrame(info), min_width=300, max_width=300)
+        ).add_to(m)
+
+
+
+    # Generate map HTML
+    return m._repr_html_()
 
 
 if __name__ == "__main__":

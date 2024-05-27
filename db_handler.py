@@ -36,3 +36,8 @@ def update_user_data(phone_number: str, data):
     user_data = sessions[0].get("user_data", {})
     user_data.update(data)
     db.update({"user_data": user_data}, Session.phone == phone_number)
+
+
+def get_all_user_data():
+    data = db.all()
+    return [r['user_data'] for r in data if 'user_data' in r]
