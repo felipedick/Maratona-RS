@@ -57,9 +57,7 @@ class WhatsAppConversation:
             update_step(self.number, input_message.ts)
         elif step == 4:
             message = "Nas últimas 24h"
-            self.client.send_question(
-                self.number, "Diarréia", message, ["Sim", "Não"]
-            )
+            self.client.send_question(self.number, "Diarréia", message, ["Sim", "Não"])
             update_step(self.number, input_message.ts)
         elif step == 5:
             message = "Nas últimas 24h ou no momento de contato com a água"
@@ -76,7 +74,10 @@ class WhatsAppConversation:
         elif step == 7:
             message = "Em qualquer período nas últimas semanas"
             self.client.send_question(
-                self.number, "Teve contato com água da enchente?", message, ["Sim", "Não"]
+                self.number,
+                "Teve contato com água da enchente?",
+                message,
+                ["Sim", "Não"],
             )
             update_step(self.number, input_message.ts)
         elif step == 8:
