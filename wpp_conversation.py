@@ -38,18 +38,21 @@ class WhatsAppConversation:
             self.client.send_message(self.number, message, "location")
             update_step(self.number, input_message.ts)
         elif step == 1:
-            message = "Quais desses sintomas você sentiu nas ultimas 24h?\n(inclua apenas os numeros)?\n\n"
-            message += "1 - Febre\n"
-            message += "2 - Dores no corpo\n"
-            self.client.send_message(self.number, message)
+            message = "Se não mediu selecione não sei"
+            self.client.send_question(
+                self.number, "Febre", message, ["Sim", "Não", "Não sei"]
+            )
             update_step(self.number, input_message.ts)
         elif step == 2:
-            if "1" in input_message.body:
-                self.client.send_message(self.number, "Você está com febre")
-            if "2" in input_message.body:
-                self.client.send_message(self.number, "Você está com dores no corpo")
-            self.client.send_message(self.number, "Vou encerrar seu atendimento")
+            message = "preencha"
+            self.client.send_question(
+                self.number, "Dor de cabeça", message, ["Sim", "Não"]
+            )
+            update_step(self.number, input_message.ts)
+        else:
             reset_step(self.number)
+            message = "Tchau, se precisar de alguma ajuda, conte comigo."
+            self.client.send_message(self.number, message)
 
     @property
     def session(self):

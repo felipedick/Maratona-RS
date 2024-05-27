@@ -30,17 +30,31 @@ async def webhook(request: Request):
             messages = change.get("value", {}).get("messages", [])
             text_messages = [m for m in messages if m.get("type") == "text"]
             locations = [m for m in messages if m.get("type") == "location"]
+            replies = [m for m in messages if m.get("type") == "interactive"]
             for message in text_messages:
                 sender = convert_number(message.get("from", ""))
                 body = message.get("text", {}).get("body")
                 ts = int(message.get("timestamp"))
-                conv = WhatsAppConversation(sender)
                 message_obj = WhatsAppMessage(from_number=sender, body=body, ts=ts)
+                conv = WhatsAppConversation(sender)
                 conv.process_message(message_obj)
             for location in locations:
                 sender = convert_number(location.get("from", ""))
                 coords = location.get("location", {})
                 update_user_data(sender, coords)
+                ts = int(location.get("timestamp"))
+                message_obj = WhatsAppMessage(from_number=sender, body="", ts=ts)
+                conv = WhatsAppConversation(sender)
+                conv.process_message(message_obj)
+            for reply in replies:
+                sender = convert_number(reply.get("from", ""))
+                rep = reply.get("interactive", {}).get("button_reply")
+                data = {rep.get("id").rsplit("_", 1)[0]: rep.get("title")}
+                update_user_data(sender, data)
+                ts = int(reply.get("timestamp"))
+                message_obj = WhatsAppMessage(from_number=sender, body="", ts=ts)
+                conv = WhatsAppConversation(sender)
+                conv.process_message(message_obj)
 
     return {"response": "OK"}
 

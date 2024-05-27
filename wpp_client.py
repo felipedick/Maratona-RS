@@ -21,6 +21,37 @@ class WhatsappAPI:
             "Content-Type": "application/json",
         }
 
+    def send_question(self, number: str, title: str, message: str, options):
+        url = f"{self.base_url}{self.api_version}/{self.number_id}/messages"
+        body = {
+            "messaging_product": "whatsapp",
+            "to": number,
+        }
+
+        options_obj = []
+        for i, option in enumerate(options):
+            options_obj.append(
+                {
+                    "type": "reply",
+                    "reply": {"id": title + "_" + str(i), "title": option},
+                }
+            )
+
+        body.update(
+            {
+                "type": "interactive",
+                "interactive": {
+                    "type": "button",
+                    "header": {"type": "text", "text": title},
+                    "body": {"text": message},
+                    "action": {"buttons": options_obj},
+                },
+            }
+        )
+
+        response = requests.post(url=url, headers=self.headers, json=body)
+        response.raise_for_status()
+
     def send_message(self, number: str, message: str, message_type: str = "text"):
         url = f"{self.base_url}{self.api_version}/{self.number_id}/messages"
         body = {
