@@ -40,4 +40,4 @@ def update_user_data(phone_number: str, data):
 
 def get_all_user_data():
     data = db.all()
-    return [r['user_data'] for r in data if 'user_data' in r]
+    return [r["user_data"] for r in data if "user_data" in r]
